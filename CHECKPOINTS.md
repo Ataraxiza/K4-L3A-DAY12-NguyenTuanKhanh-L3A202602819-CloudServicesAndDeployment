@@ -17,7 +17,7 @@ vào giờ bắt đầu cụ thể:
 | CP5 — Cloud Deployment | Start +200–230 phút | Start +230 phút |
 | Wrap-up và nộp bài | Start +230–240 phút | Start +240 phút |
 
-## CP0 — Setup
+## CP0 — Setup 
 
 **Sản phẩm:** repo cá nhân đúng tên, môi trường Python cài được dependency,
 `.env` cục bộ được tạo từ `.env.example`, Redis khởi động được hoặc dùng
