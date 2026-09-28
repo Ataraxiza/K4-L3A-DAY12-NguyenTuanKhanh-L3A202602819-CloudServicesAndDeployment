@@ -129,7 +129,7 @@ def ask(
 ):
     """Hỏi agent một câu.
 
-    TODO (CP3 + CP4) — làm ĐÚNG THỨ TỰ sau:
+    (CP3 + CP4) — làm ĐÚNG THỨ TỰ sau:
       1. ``limiter.check(user_id)``           → 429 nếu gọi quá nhanh
       2. ``guard.check(user_id)``             → 402 nếu hết ngân sách
       3. ``history = store.get_history(user_id)``
@@ -156,7 +156,45 @@ def ask(
     ``user_id`` do ``verify_api_key`` trả về, nên request không có API key
     hợp lệ sẽ dừng ở 401 trước khi chạm vào bất cứ dòng nào ở đây.
     """
-    raise NotImplementedError("TODO (CP3/CP4): cài đặt /ask")
+    # 1. Rate limit
+    limiter.check(user_id)
+
+    # 2. Monthly budget
+    guard.check(user_id)
+
+    # 3. Get conversation history
+    history = store.get_history(user_id)
+
+    # 4. Call LLM
+    result = ask_llm(payload.question, history)
+
+    # 5. Store user message and assistant response
+    store.append(user_id, "user", payload.question)
+    store.append(user_id, "assistant", result["answer"])
+
+    # 6. Record actual LLM cost
+    guard.record(user_id, result["cost_usd"])
+
+    # 7. Structured logging
+    log_event(
+        "ask_completed",
+        user_id=user_id,
+        tokens_in=result["tokens_in"],
+        tokens_out=result["tokens_out"],
+        cost_usd=result["cost_usd"],
+    )
+
+    # 8. Response
+    return {
+        "answer": result["answer"],
+        "user_id": user_id,
+        "history_length": len(history),
+        "cost_usd": result["cost_usd"],
+        "tokens": {
+            "in": result["tokens_in"],
+            "out": result["tokens_out"],
+        },
+    }
 
 
 if __name__ == "__main__":
