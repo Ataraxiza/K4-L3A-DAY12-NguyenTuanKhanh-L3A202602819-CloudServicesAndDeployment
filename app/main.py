@@ -127,7 +127,7 @@ def ready(store: ConversationStore = Depends(get_store)):
             content={"status": "not ready", "redis": False},
         )
 
-    # 3. App và dependency đều sẵn sàng
+    # 3. App và dependency đều sẵn sàng 
     return {
         "status": "ready",
         "redis": True,
