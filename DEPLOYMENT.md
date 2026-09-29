@@ -10,17 +10,17 @@
 
 | Mục | Nội dung |
 |-----|----------|
-| Họ và tên | (điền họ tên) |
-| Mã học viên | (điền mã học viên) |
-| Repo | (điền link repo K4-L3A-DAY12-HoVaTen-MSSV-CloudServicesAndDeployment) |
+| Họ và tên | Nguyễn Tuấn Khanh |
+| Mã học viên | 2A202602819 |
+| Repo | https://github.com/VinUni-AI20k/K4-L3A-Cloud-Service-And-Deployment |
 
 ## Service
 
 | Mục | Nội dung |
 |-----|----------|
-| Public URL | https://TODO-thay-bang-url-that.up.railway.app |
-| Platform | Railway / Render / Cloud Run — (điền platform bạn dùng) |
-| Ngày deploy | (điền ngày) |
+| Public URL | https://agent-production-7052.up.railway.app |
+| Platform | Railway|
+| Ngày deploy | 28/09/2026 |
 
 ## Biến Môi Trường Đã Set Trên Cloud
 
@@ -30,7 +30,7 @@ Ghi tên biến và **nguồn giá trị**, không ghi giá trị:
 |------|--------|---------|
 | `PORT` | ✅ | platform tự gán |
 | `AGENT_API_KEY` | ✅ | đặt trong dashboard, không nằm trong repo |
-| `REDIS_URL` | ✅ | (điền: Redis add-on của platform / Upstash / ...) |
+| `REDIS_URL` | ✅ | Redis service của Railway — private connection URL (redis.railway.internal:6379) |
 | `RATE_LIMIT_PER_MINUTE` | ✅ | 10 |
 | `MONTHLY_BUDGET_USD` | ✅ | 10.0 |
 | `LOG_LEVEL` | ✅ | INFO |
@@ -73,7 +73,24 @@ done; echo
 Dán output của các lệnh trên vào đây:
 
 ```
-(điền output)
+Kết quả của curl -i %URL%/health:
+HTTP/1.1 200 OK
+{"status":"ok","service":"day12-agent","version":"1.0.0"}
+
+Kết quả của curl -i %URL%/ready:
+HTTP/1.1 200 OK
+{"status":"ready","redis":true}
+
+Kết quả của curl -i -X POST %URL%/ask -H "Content-Type: application/json" -d "{\"question\":\"Hello\"}"
+HTTP/1.1 401 Unauthorized
+{"detail":"invalid or missing API key"}
+
+Kết quả của curl -i -X POST %URL%/ask -H "Content-Type: application/json" -H "X-API-Key: %AGENT_API_KEY%" -H "X-User-Id: sv-test" -d "{\"question\":\"Deploy là gì?\"}"
+HTTP/1.1 200 OK
+{"answer":"Câu hỏi hay. Deploy là gì thường được giải quyết bằng cách chuẩn hóa môi trường chạy: cùng một image chạy giống nhau ở laptop và trên cloud.","user_id":"sv-test","history_length":0,"cost_usd":2.145e-05,"tokens":{"in":3,"out":35}}
+
+Kết quả của 1..15 | % { curl.exe -s -o NUL -w "%{http_code} " -X POST "$env:URL/ask" -H "Content-Type: application/json" -H "X-API-Key: $env:AGENT_API_KEY" -H "X-User-Id: sv-test" -d '{\"question\":\"test\"}' }
+200 200 200 200 200 200 200 200 200 200 429 429 429 429 429
 ```
 
 ## Ảnh Chụp Màn Hình
@@ -85,17 +102,6 @@ Dán output của các lệnh trên vào đây:
 
 ---
 
-## Nếu Dùng Phương Án Dự Phòng
+## Phương Án Dự Phòng
 
-Không đăng ký được tài khoản cloud? Vẫn nộp được bài, nhưng CP5 tối đa 60% điểm:
-
-1. Đặt `LOCAL_FALLBACK=true` trong `.env`
-2. Chạy `docker compose up -d` rồi kiểm tra `docker compose ps`
-3. Chụp màn hình vào `screenshots/`
-4. Chạy `pytest tests/test_cp5.py -v` — bộ test sẽ tự chuyển sang kiểm tra
-   `http://localhost:8000`
-5. Ghi rõ lý do không deploy được vào phần dưới đây:
-
-```
-(điền lý do nếu dùng phương án dự phòng, ngược lại xóa mục này)
-```
+Không sử dụng; ứng dụng đã được triển khai trên Railway.

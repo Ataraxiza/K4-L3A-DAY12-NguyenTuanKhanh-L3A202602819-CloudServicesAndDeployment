@@ -54,7 +54,7 @@ class ConversationStore:
         try:
             self.client.ping()
             return True
-        except Exception:
+        except Exception as e:
             return False
 
     def append(self, user_id: str, role: str, content: str) -> None:
